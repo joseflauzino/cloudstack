@@ -1,0 +1,32 @@
+package com.cloud.utils.vines;
+
+import java.io.Serializable;
+
+public class Vnffg implements Serializable{
+
+private String id;
+private String vnffgdid;
+
+/////////////////////////////////////////////////////
+////////////////// SET METHODS //////////////////////
+/////////////////////////////////////////////////////
+
+public void setId(String id) {
+this.id = id;
+}
+public void setVnffgdid(String vnffgdid) {
+this.vnffgdid = vnffgdid;
+}
+
+/////////////////////////////////////////////////////
+////////////////// GET METHODS //////////////////////
+/////////////////////////////////////////////////////
+
+public String getId() {
+return id;
+}
+public String getVnffgdid() {
+return vnffgdid;
+}
+
+}

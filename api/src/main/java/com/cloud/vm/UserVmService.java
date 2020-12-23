@@ -60,14 +60,11 @@ import com.cloud.utils.exception.ExecutionException;
 
 public interface UserVmService {
 
-
     /**
      * Destroys one virtual machine
      *
-     * @param userId
-     *            the id of the user performing the action
-     * @param vmId
-     *            the id of the virtual machine.
+     * @param userId the id of the user performing the action
+     * @param vmId   the id of the virtual machine.
      * @throws ConcurrentOperationException
      * @throws ResourceUnavailableException
      */
@@ -76,10 +73,8 @@ public interface UserVmService {
     /**
      * Destroys one virtual machine
      *
-     * @param vmId
-     *            the id of the virtual machine.
-     * @param expunge
-     *            indicates if vm should be expunged
+     * @param vmId    the id of the virtual machine.
+     * @param expunge indicates if vm should be expunged
      * @throws ConcurrentOperationException
      * @throws ResourceUnavailableException
      */
@@ -88,23 +83,23 @@ public interface UserVmService {
     /**
      * Resets the password of a virtual machine.
      *
-     * @param cmd
-     *            - the command specifying vmId, password
+     * @param cmd - the command specifying vmId, password
      * @return the VM if reset worked successfully, null otherwise
      */
-    UserVm resetVMPassword(ResetVMPasswordCmd cmd, String password) throws ResourceUnavailableException, InsufficientCapacityException;
+    UserVm resetVMPassword(ResetVMPasswordCmd cmd, String password)
+            throws ResourceUnavailableException, InsufficientCapacityException;
 
     /**
      * Resets the SSH Key of a virtual machine.
      *
-     * @param cmd
-     *            - the command specifying vmId, Keypair name
+     * @param cmd - the command specifying vmId, Keypair name
      * @return the VM if reset worked successfully, null otherwise
      */
     UserVm resetVMSSHKey(ResetVMSSHKeyCmd cmd) throws ResourceUnavailableException, InsufficientCapacityException;
 
-    UserVm startVirtualMachine(StartVMCmd cmd) throws StorageUnavailableException, ExecutionException, ConcurrentOperationException, ResourceUnavailableException,
-        InsufficientCapacityException, ResourceAllocationException;
+    UserVm startVirtualMachine(StartVMCmd cmd)
+            throws StorageUnavailableException, ExecutionException, ConcurrentOperationException,
+            ResourceUnavailableException, InsufficientCapacityException, ResourceAllocationException;
 
     UserVm rebootVirtualMachine(RebootVMCmd cmd) throws InsufficientCapacityException, ResourceUnavailableException;
 
@@ -112,6 +107,7 @@ public interface UserVmService {
 
     /**
      * Adds a NIC on the given network to the virtual machine
+     *
      * @param cmd the command object that defines the vm and the given network
      * @return the vm object if successful, null otherwise
      */
@@ -119,6 +115,7 @@ public interface UserVmService {
 
     /**
      * Removes a NIC on the given network from the virtual machine
+     *
      * @param cmd the command object that defines the vm and the given network
      * @return the vm object if successful, null otherwise
      */
@@ -126,6 +123,7 @@ public interface UserVmService {
 
     /**
      * Updates default Nic to the given network for given virtual machine
+     *
      * @param cmd the command object that defines the vm and the given network
      * @return the vm object if successful, null otherwise
      */
@@ -133,6 +131,7 @@ public interface UserVmService {
 
     /**
      * Updated the ip address on the given NIC to the virtual machine
+     *
      * @param cmd the command object that defines the ip address and the given nic
      * @return the vm object if successful, null otherwise
      */
@@ -146,265 +145,272 @@ public interface UserVmService {
      *
      *
      *
-     * @param zone
-     *            - availability zone for the virtual machine
-     * @param serviceOffering
-     *            - the service offering for the virtual machine
-     * @param template
-     *            - the template for the virtual machine
-     * @param securityGroupIdList
-     *            - comma separated list of security groups id that going to be
-     *            applied to the virtual machine
-     * @param hostName
-     *            - host name for the virtual machine
-     * @param displayName
-     *            - an optional user generated name for the virtual machine
-     * @param diskOfferingId
-     *            - the ID of the disk offering for the virtual machine. If the
-     *            template is of ISO format, the diskOfferingId is for the root
-     *            disk volume. Otherwise this parameter is used to indicate the
-     *            offering for the data disk volume. If the templateId parameter
-     *            passed is from a Template object, the diskOfferingId refers to
-     *            a DATA Disk Volume created. If the templateId parameter passed
-     *            is from an ISO object, the diskOfferingId refers to a ROOT
-     *            Disk Volume created
-     * @param diskSize
-     *            - the arbitrary size for the DATADISK volume. Mutually
-     *            exclusive with diskOfferingId
-     * @param group
-     *            - an optional group for the virtual machine
-     * @param hypervisor
-     *            - the hypervisor on which to deploy the virtual machine
-     * @param userData
-     *            - an optional binary data that can be sent to the virtual
-     *            machine upon a successful deployment. This binary data must be
-     *            base64 encoded before adding it to the request. Currently only
-     *            HTTP GET is supported. Using HTTP GET (via querystring), you
-     *            can send up to 2KB of data after base64 encoding
-     * @param sshKeyPair
-     *            - name of the ssh key pair used to login to the virtual
-     *            machine
-     * @param requestedIps
-     *            TODO
-     * @param defaultIp
-     *            TODO
-     * @param displayVm
-     *            - Boolean flag whether to the display the vm to the end user or not
+     * @param zone                - availability zone for the virtual machine
+     * @param serviceOffering     - the service offering for the virtual machine
+     * @param template            - the template for the virtual machine
+     * @param securityGroupIdList - comma separated list of security groups id that
+     *                            going to be applied to the virtual machine
+     * @param hostName            - host name for the virtual machine
+     * @param displayName         - an optional user generated name for the virtual
+     *                            machine
+     * @param diskOfferingId      - the ID of the disk offering for the virtual
+     *                            machine. If the template is of ISO format, the
+     *                            diskOfferingId is for the root disk volume.
+     *                            Otherwise this parameter is used to indicate the
+     *                            offering for the data disk volume. If the
+     *                            templateId parameter passed is from a Template
+     *                            object, the diskOfferingId refers to a DATA Disk
+     *                            Volume created. If the templateId parameter passed
+     *                            is from an ISO object, the diskOfferingId refers
+     *                            to a ROOT Disk Volume created
+     * @param diskSize            - the arbitrary size for the DATADISK volume.
+     *                            Mutually exclusive with diskOfferingId
+     * @param group               - an optional group for the virtual machine
+     * @param hypervisor          - the hypervisor on which to deploy the virtual
+     *                            machine
+     * @param userData            - an optional binary data that can be sent to the
+     *                            virtual machine upon a successful deployment. This
+     *                            binary data must be base64 encoded before adding
+     *                            it to the request. Currently only HTTP GET is
+     *                            supported. Using HTTP GET (via querystring), you
+     *                            can send up to 2KB of data after base64 encoding
+     * @param sshKeyPair          - name of the ssh key pair used to login to the
+     *                            virtual machine
+     * @param requestedIps        TODO
+     * @param defaultIp           TODO
+     * @param displayVm           - Boolean flag whether to the display the vm to
+     *                            the end user or not
      * @param affinityGroupIdList
      * @param cpuSpeed
      * @param memory
      * @param cpuNumber
      * @param customId
-     * @param dhcpOptionMap
-     *           - Maps the dhcp option code and the dhcp value to the network uuid
+     * @param dhcpOptionMap       - Maps the dhcp option code and the dhcp value to
+     *                            the network uuid
      * @return UserVm object if successful.
-     * @param dataDiskTemplateToDiskOfferingMap
-     *            - Datadisk template to Disk offering Map
-     *             an optional parameter that creates additional data disks for the virtual machine
-     *             For each of the templates in the map, a data disk will be created from the corresponding
-     *             disk offering obtained from the map
+     * @param dataDiskTemplateToDiskOfferingMap - Datadisk template to Disk offering
+     *                                          Map an optional parameter that
+     *                                          creates additional data disks for
+     *                                          the virtual machine For each of the
+     *                                          templates in the map, a data disk
+     *                                          will be created from the
+     *                                          corresponding disk offering obtained
+     *                                          from the map
      *
-     * @throws InsufficientCapacityException
-     *             if there is insufficient capacity to deploy the VM.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM or in the
-     *             same environment.
-     * @throws ResourceUnavailableException
-     *             if the resources required to deploy the VM is not currently
-     *             available.
+     * @throws InsufficientCapacityException if there is insufficient capacity to
+     *                                       deploy the VM.
+     * @throws ConcurrentOperationException  if there are multiple users working on
+     *                                       the same VM or in the same environment.
+     * @throws ResourceUnavailableException  if the resources required to deploy the
+     *                                       VM is not currently available.
      */
-    UserVm createBasicSecurityGroupVirtualMachine(DataCenter zone, ServiceOffering serviceOffering, VirtualMachineTemplate template, List<Long> securityGroupIdList,
-        Account owner, String hostName, String displayName, Long diskOfferingId, Long diskSize, String group, HypervisorType hypervisor, HTTPMethod httpmethod,
-        String userData, String sshKeyPair, Map<Long, IpAddresses> requestedIps, IpAddresses defaultIp, Boolean displayVm, String keyboard,
-        List<Long> affinityGroupIdList, Map<String, String> customParameter, String customId, Map<String, Map<Integer, String>> dhcpOptionMap,
-        Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap,
-        Map<String, String> userVmOVFProperties) throws InsufficientCapacityException,
-        ConcurrentOperationException, ResourceUnavailableException, StorageUnavailableException, ResourceAllocationException;
+    UserVm createBasicSecurityGroupVirtualMachine(DataCenter zone, ServiceOffering serviceOffering,
+            VirtualMachineTemplate template, List<Long> securityGroupIdList, Account owner, String hostName,
+            String displayName, Long diskOfferingId, Long diskSize, String group, HypervisorType hypervisor,
+            HTTPMethod httpmethod, String userData, String sshKeyPair, Map<Long, IpAddresses> requestedIps,
+            IpAddresses defaultIp, Boolean displayVm, String keyboard, List<Long> affinityGroupIdList,
+            Map<String, String> customParameter, String customId, Map<String, Map<Integer, String>> dhcpOptionMap,
+            Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap, Map<String, String> userVmOVFProperties)
+            throws InsufficientCapacityException, ConcurrentOperationException, ResourceUnavailableException,
+            StorageUnavailableException, ResourceAllocationException;
 
     /**
-     * Creates a User VM in Advanced Zone (Security Group feature is enabled) in
+     * Creates a User VM in Advanced Zone (Security Group feature is enabled) in the
+     * database and returns the VM to the caller.
+     *
+     *
+     *
+     * @param zone                              - availability zone for the virtual
+     *                                          machine
+     * @param serviceOffering                   - the service offering for the
+     *                                          virtual machine
+     * @param template                          - the template for the virtual
+     *                                          machine
+     * @param networkIdList                     - list of network ids used by
+     *                                          virtual machine
+     * @param securityGroupIdList               - comma separated list of security
+     *                                          groups id that going to be applied
+     *                                          to the virtual machine
+     * @param hostName                          - host name for the virtual machine
+     * @param displayName                       - an optional user generated name
+     *                                          for the virtual machine
+     * @param diskOfferingId                    - the ID of the disk offering for
+     *                                          the virtual machine. If the template
+     *                                          is of ISO format, the diskOfferingId
+     *                                          is for the root disk volume.
+     *                                          Otherwise this parameter is used to
+     *                                          indicate the offering for the data
+     *                                          disk volume. If the templateId
+     *                                          parameter passed is from a Template
+     *                                          object, the diskOfferingId refers to
+     *                                          a DATA Disk Volume created. If the
+     *                                          templateId parameter passed is from
+     *                                          an ISO object, the diskOfferingId
+     *                                          refers to a ROOT Disk Volume created
+     * @param diskSize                          - the arbitrary size for the
+     *                                          DATADISK volume. Mutually exclusive
+     *                                          with diskOfferingId
+     * @param group                             - an optional group for the virtual
+     *                                          machine
+     * @param hypervisor                        - the hypervisor on which to deploy
+     *                                          the virtual machine
+     * @param userData                          - an optional binary data that can
+     *                                          be sent to the virtual machine upon
+     *                                          a successful deployment. This binary
+     *                                          data must be base64 encoded before
+     *                                          adding it to the request. Currently
+     *                                          only HTTP GET is supported. Using
+     *                                          HTTP GET (via querystring), you can
+     *                                          send up to 2KB of data after base64
+     *                                          encoding
+     * @param sshKeyPair                        - name of the ssh key pair used to
+     *                                          login to the virtual machine
+     * @param requestedIps                      TODO
+     * @param defaultIps                        TODO
+     * @param displayVm                         - Boolean flag whether to the
+     *                                          display the vm to the end user or
+     *                                          not
+     * @param affinityGroupIdList
+     * @param memory
+     * @param cpuNumber
+     * @param customId
+     * @param dhcpOptionMap                     - Maps the dhcp option code and the
+     *                                          dhcp value to the network uuid
+     * @param dataDiskTemplateToDiskOfferingMap - Datadisk template to Disk offering
+     *                                          Map an optional parameter that
+     *                                          creates additional data disks for
+     *                                          the virtual machine For each of the
+     *                                          templates in the map, a data disk
+     *                                          will be created from the
+     *                                          corresponding disk offering obtained
+     *                                          from the map
+     * @return UserVm object if successful.
+     *
+     * @throws InsufficientCapacityException if there is insufficient capacity to
+     *                                       deploy the VM.
+     * @throws ConcurrentOperationException  if there are multiple users working on
+     *                                       the same VM or in the same environment.
+     * @throws ResourceUnavailableException  if the resources required to deploy the
+     *                                       VM is not currently available.
+     */
+    UserVm createAdvancedSecurityGroupVirtualMachine(DataCenter zone, ServiceOffering serviceOffering,
+            VirtualMachineTemplate template, List<Long> networkIdList, List<Long> securityGroupIdList, Account owner,
+            String hostName, String displayName, Long diskOfferingId, Long diskSize, String group,
+            HypervisorType hypervisor, HTTPMethod httpmethod, String userData, String sshKeyPair,
+            Map<Long, IpAddresses> requestedIps, IpAddresses defaultIps, Boolean displayVm, String keyboard,
+            List<Long> affinityGroupIdList, Map<String, String> customParameters, String customId,
+            Map<String, Map<Integer, String>> dhcpOptionMap, Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap,
+            Map<String, String> userVmOVFProperties) throws InsufficientCapacityException, ConcurrentOperationException,
+            ResourceUnavailableException, StorageUnavailableException, ResourceAllocationException;
+
+    /**
+     * Creates a User VM in Advanced Zone (Security Group feature is disabled) in
      * the database and returns the VM to the caller.
      *
      *
      *
-     * @param zone
-     *            - availability zone for the virtual machine
-     * @param serviceOffering
-     *            - the service offering for the virtual machine
-     * @param template
-     *            - the template for the virtual machine
-     * @param networkIdList
-     *            - list of network ids used by virtual machine
-     * @param securityGroupIdList
-     *            - comma separated list of security groups id that going to be
-     *            applied to the virtual machine
-     * @param hostName
-     *            - host name for the virtual machine
-     * @param displayName
-     *            - an optional user generated name for the virtual machine
-     * @param diskOfferingId
-     *            - the ID of the disk offering for the virtual machine. If the
-     *            template is of ISO format, the diskOfferingId is for the root
-     *            disk volume. Otherwise this parameter is used to indicate the
-     *            offering for the data disk volume. If the templateId parameter
-     *            passed is from a Template object, the diskOfferingId refers to
-     *            a DATA Disk Volume created. If the templateId parameter passed
-     *            is from an ISO object, the diskOfferingId refers to a ROOT
-     *            Disk Volume created
-     * @param diskSize
-     *            - the arbitrary size for the DATADISK volume. Mutually
-     *            exclusive with diskOfferingId
-     * @param group
-     *            - an optional group for the virtual machine
-     * @param hypervisor
-     *            - the hypervisor on which to deploy the virtual machine
-     * @param userData
-     *            - an optional binary data that can be sent to the virtual
-     *            machine upon a successful deployment. This binary data must be
-     *            base64 encoded before adding it to the request. Currently only
-     *            HTTP GET is supported. Using HTTP GET (via querystring), you
-     *            can send up to 2KB of data after base64 encoding
-     * @param sshKeyPair
-     *            - name of the ssh key pair used to login to the virtual
-     *            machine
-     * @param requestedIps
-     *            TODO
-     * @param defaultIps
-     *            TODO
-     * @param displayVm
-     *            - Boolean flag whether to the display the vm to the end user or not
-     * @param affinityGroupIdList
-     * @param memory
-     * @param cpuNumber
-     * @param customId
-     * @param dhcpOptionMap
-     *             - Maps the dhcp option code and the dhcp value to the network uuid
-     * @param dataDiskTemplateToDiskOfferingMap
-     *            - Datadisk template to Disk offering Map
-     *             an optional parameter that creates additional data disks for the virtual machine
-     *             For each of the templates in the map, a data disk will be created from the corresponding
-     *             disk offering obtained from the map
-     * @return UserVm object if successful.
-     *
-     * @throws InsufficientCapacityException
-     *             if there is insufficient capacity to deploy the VM.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM or in the
-     *             same environment.
-     * @throws ResourceUnavailableException
-     *             if the resources required to deploy the VM is not currently
-     *             available.
-     */
-    UserVm createAdvancedSecurityGroupVirtualMachine(DataCenter zone, ServiceOffering serviceOffering, VirtualMachineTemplate template, List<Long> networkIdList,
-        List<Long> securityGroupIdList, Account owner, String hostName, String displayName, Long diskOfferingId, Long diskSize, String group, HypervisorType hypervisor,
-        HTTPMethod httpmethod, String userData, String sshKeyPair, Map<Long, IpAddresses> requestedIps, IpAddresses defaultIps, Boolean displayVm, String keyboard,
-        List<Long> affinityGroupIdList, Map<String, String> customParameters, String customId, Map<String, Map<Integer, String>> dhcpOptionMap,
-        Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap,
-        Map<String, String> userVmOVFProperties) throws InsufficientCapacityException,
-        ConcurrentOperationException, ResourceUnavailableException, StorageUnavailableException, ResourceAllocationException;
-
-    /**
-     * Creates a User VM in Advanced Zone (Security Group feature is disabled)
-     * in the database and returns the VM to the caller.
-     *
-     *
-     *
-     * @param zone
-     *            - availability zone for the virtual machine
-     * @param serviceOffering
-     *            - the service offering for the virtual machine
-     * @param template
-     *            - the template for the virtual machine
-     * @param networkIdList
-     *            - list of network ids used by virtual machine
-     * @param hostName
-     *            - host name for the virtual machine
-     * @param displayName
-     *            - an optional user generated name for the virtual machine
-     * @param diskOfferingId
-     *            - the ID of the disk offering for the virtual machine. If the
-     *            template is of ISO format, the diskOfferingId is for the root
-     *            disk volume. Otherwise this parameter is used to indicate the
-     *            offering for the data disk volume. If the templateId parameter
-     *            passed is from a Template object, the diskOfferingId refers to
-     *            a DATA Disk Volume created. If the templateId parameter passed
-     *            is from an ISO object, the diskOfferingId refers to a ROOT
-     *            Disk Volume created
-     * @param diskSize
-     *            - the arbitrary size for the DATADISK volume. Mutually
-     *            exclusive with diskOfferingId
-     * @param group
-     *            - an optional group for the virtual machine
-     * @param hypervisor
-     *            - the hypervisor on which to deploy the virtual machine
-     * @param userData
-     *            - an optional binary data that can be sent to the virtual
-     *            machine upon a successful deployment. This binary data must be
-     *            base64 encoded before adding it to the request. Currently only
-     *            HTTP GET is supported. Using HTTP GET (via querystring), you
-     *            can send up to 2KB of data after base64 encoding
-     * @param sshKeyPair
-     *            - name of the ssh key pair used to login to the virtual
-     *            machine
-     * @param requestedIps
-     *            TODO
-     * @param defaultIps
-     *            TODO
-     * @param displayVm
-     *            - Boolean flag whether to the display the vm to the end user or not
+     * @param zone                              - availability zone for the virtual
+     *                                          machine
+     * @param serviceOffering                   - the service offering for the
+     *                                          virtual machine
+     * @param template                          - the template for the virtual
+     *                                          machine
+     * @param networkIdList                     - list of network ids used by
+     *                                          virtual machine
+     * @param hostName                          - host name for the virtual machine
+     * @param displayName                       - an optional user generated name
+     *                                          for the virtual machine
+     * @param diskOfferingId                    - the ID of the disk offering for
+     *                                          the virtual machine. If the template
+     *                                          is of ISO format, the diskOfferingId
+     *                                          is for the root disk volume.
+     *                                          Otherwise this parameter is used to
+     *                                          indicate the offering for the data
+     *                                          disk volume. If the templateId
+     *                                          parameter passed is from a Template
+     *                                          object, the diskOfferingId refers to
+     *                                          a DATA Disk Volume created. If the
+     *                                          templateId parameter passed is from
+     *                                          an ISO object, the diskOfferingId
+     *                                          refers to a ROOT Disk Volume created
+     * @param diskSize                          - the arbitrary size for the
+     *                                          DATADISK volume. Mutually exclusive
+     *                                          with diskOfferingId
+     * @param group                             - an optional group for the virtual
+     *                                          machine
+     * @param hypervisor                        - the hypervisor on which to deploy
+     *                                          the virtual machine
+     * @param userData                          - an optional binary data that can
+     *                                          be sent to the virtual machine upon
+     *                                          a successful deployment. This binary
+     *                                          data must be base64 encoded before
+     *                                          adding it to the request. Currently
+     *                                          only HTTP GET is supported. Using
+     *                                          HTTP GET (via querystring), you can
+     *                                          send up to 2KB of data after base64
+     *                                          encoding
+     * @param sshKeyPair                        - name of the ssh key pair used to
+     *                                          login to the virtual machine
+     * @param requestedIps                      TODO
+     * @param defaultIps                        TODO
+     * @param displayVm                         - Boolean flag whether to the
+     *                                          display the vm to the end user or
+     *                                          not
      * @param affinityGroupIdList
      * @param cpuSpeed
      * @param memory
      * @param cpuNumber
      * @param customId
-     * @param dhcpOptionMap
-     *             - Map that maps the DhcpOption code and their value on the Network uuid
-     * @param dataDiskTemplateToDiskOfferingMap
-     *            - Datadisk template to Disk offering Map
-     *             an optional parameter that creates additional data disks for the virtual machine
-     *             For each of the templates in the map, a data disk will be created from the corresponding
-     *             disk offering obtained from the map
+     * @param dhcpOptionMap                     - Map that maps the DhcpOption code
+     *                                          and their value on the Network uuid
+     * @param dataDiskTemplateToDiskOfferingMap - Datadisk template to Disk offering
+     *                                          Map an optional parameter that
+     *                                          creates additional data disks for
+     *                                          the virtual machine For each of the
+     *                                          templates in the map, a data disk
+     *                                          will be created from the
+     *                                          corresponding disk offering obtained
+     *                                          from the map
      * @return UserVm object if successful.
      *
-     * @throws InsufficientCapacityException
-     *             if there is insufficient capacity to deploy the VM.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM or in the
-     *             same environment.
-     * @throws ResourceUnavailableException
-     *             if the resources required to deploy the VM is not currently
-     *             available.
+     * @throws InsufficientCapacityException if there is insufficient capacity to
+     *                                       deploy the VM.
+     * @throws ConcurrentOperationException  if there are multiple users working on
+     *                                       the same VM or in the same environment.
+     * @throws ResourceUnavailableException  if the resources required to deploy the
+     *                                       VM is not currently available.
      */
-    UserVm createAdvancedVirtualMachine(DataCenter zone, ServiceOffering serviceOffering, VirtualMachineTemplate template, List<Long> networkIdList, Account owner,
-        String hostName, String displayName, Long diskOfferingId, Long diskSize, String group, HypervisorType hypervisor, HTTPMethod httpmethod, String userData,
-        String sshKeyPair, Map<Long, IpAddresses> requestedIps, IpAddresses defaultIps, Boolean displayVm, String keyboard, List<Long> affinityGroupIdList,
-        Map<String, String> customParameters, String customId, Map<String, Map<Integer, String>> dhcpOptionMap, Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap,
-        Map<String, String> templateOvfPropertiesMap)
+    UserVm createAdvancedVirtualMachine(DataCenter zone, ServiceOffering serviceOffering,
+            VirtualMachineTemplate template, List<Long> networkIdList, Account owner, String hostName,
+            String displayName, Long diskOfferingId, Long diskSize, String group, HypervisorType hypervisor,
+            HTTPMethod httpmethod, String userData, String sshKeyPair, Map<Long, IpAddresses> requestedIps,
+            IpAddresses defaultIps, Boolean displayVm, String keyboard, List<Long> affinityGroupIdList,
+            Map<String, String> customParameters, String customId, Map<String, Map<Integer, String>> dhcpOptionMap,
+            Map<Long, DiskOffering> dataDiskTemplateToDiskOfferingMap, Map<String, String> templateOvfPropertiesMap)
 
-        throws InsufficientCapacityException, ConcurrentOperationException, ResourceUnavailableException, StorageUnavailableException, ResourceAllocationException;
+            throws InsufficientCapacityException, ConcurrentOperationException, ResourceUnavailableException,
+            StorageUnavailableException, ResourceAllocationException;
 
     /**
      * Starts the virtual machine created from createVirtualMachine.
      *
-     * @param cmd
-     *            Command to deploy.
+     * @param cmd Command to deploy.
      * @return UserVm object if successful.
-     * @throws InsufficientCapacityException
-     *             if there is insufficient capacity to deploy the VM.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM.
-     * @throws ResourceUnavailableException
-     *             if the resources required the deploy the VM is not currently available.
+     * @throws InsufficientCapacityException if there is insufficient capacity to
+     *                                       deploy the VM.
+     * @throws ConcurrentOperationException  if there are multiple users working on
+     *                                       the same VM.
+     * @throws ResourceUnavailableException  if the resources required the deploy
+     *                                       the VM is not currently available.
      */
-    UserVm startVirtualMachine(DeployVMCmd cmd) throws InsufficientCapacityException, ConcurrentOperationException, ResourceUnavailableException, ResourceAllocationException;
+    UserVm startVirtualMachine(DeployVMCmd cmd) throws InsufficientCapacityException, ConcurrentOperationException,
+            ResourceUnavailableException, ResourceAllocationException;
 
     /**
      * Creates a vm group.
      *
-     * @param name
-     *            - name of the group
-     * @param accountId
-     *            - accountId
+     * @param name      - name of the group
+     * @param accountId - accountId
      */
     InstanceGroup createVmGroup(CreateVMGroupCmd cmd);
 
@@ -413,8 +419,7 @@ public interface UserVmService {
     /**
      * upgrade the service offering of the virtual machine
      *
-     * @param cmd
-     *            - the command specifying vmId and new serviceOfferingId
+     * @param cmd - the command specifying vmId and new serviceOfferingId
      * @return the vm
      * @throws ResourceAllocationException
      */
@@ -426,102 +431,110 @@ public interface UserVmService {
 
     HypervisorType getHypervisorTypeOfUserVM(long vmid);
 
-    UserVm createVirtualMachine(DeployVMCmd cmd) throws InsufficientCapacityException, ResourceUnavailableException, ConcurrentOperationException,
-        StorageUnavailableException, ResourceAllocationException;
+    UserVm createVirtualMachine(DeployVMCmd cmd) throws InsufficientCapacityException, ResourceUnavailableException,
+            ConcurrentOperationException, StorageUnavailableException, ResourceAllocationException;
 
     UserVm getUserVm(long vmId);
 
     /**
-     * Migrate the given VM to the destination host provided. The API returns the migrated VM if migration succeeds.
-     * Only Root
-     * Admin can migrate a VM.
+     * Migrate the given VM to the destination host provided. The API returns the
+     * migrated VM if migration succeeds. Only Root Admin can migrate a VM.
      *
-     * @param destinationStorage
-     *            TODO
-     * @param Long
-     *            vmId
-     *            vmId of The VM to migrate
-     * @param Host
-     *            destinationHost to migrate the VM
+     * @param destinationStorage TODO
+     * @param Long               vmId vmId of The VM to migrate
+     * @param Host               destinationHost to migrate the VM
      *
      * @return VirtualMachine migrated VM
-     * @throws ManagementServerException
-     *             in case we get error finding the VM or host or access errors or other internal errors.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM.
-     * @throws ResourceUnavailableException
-     *             if the destination host to migrate the VM is not currently available.
-     * @throws VirtualMachineMigrationException
-     *             if the VM to be migrated is not in Running state
+     * @throws ManagementServerException        in case we get error finding the VM
+     *                                          or host or access errors or other
+     *                                          internal errors.
+     * @throws ConcurrentOperationException     if there are multiple users working
+     *                                          on the same VM.
+     * @throws ResourceUnavailableException     if the destination host to migrate
+     *                                          the VM is not currently available.
+     * @throws VirtualMachineMigrationException if the VM to be migrated is not in
+     *                                          Running state
      */
-    VirtualMachine migrateVirtualMachine(Long vmId, Host destinationHost) throws ResourceUnavailableException, ConcurrentOperationException, ManagementServerException,
-        VirtualMachineMigrationException;
+    VirtualMachine migrateVirtualMachine(Long vmId, Host destinationHost) throws ResourceUnavailableException,
+            ConcurrentOperationException, ManagementServerException, VirtualMachineMigrationException;
 
     /**
-     * Migrate the given VM with its volumes to the destination host. The API returns the migrated VM if it succeeds.
-     * Only root admin can migrate a VM.
+     * Migrate the given VM with its volumes to the destination host. The API
+     * returns the migrated VM if it succeeds. Only root admin can migrate a VM.
      *
-     * @param destinationStorage
-     *            TODO
-     * @param Long
-     *            vmId of The VM to migrate
-     * @param Host
-     *            destinationHost to migrate the VM
-     * @param Map
-     *            A map of volume to which pool it should be migrated
+     * @param destinationStorage TODO
+     * @param Long               vmId of The VM to migrate
+     * @param Host               destinationHost to migrate the VM
+     * @param Map                A map of volume to which pool it should be migrated
      *
      * @return VirtualMachine migrated VM
-     * @throws ManagementServerException
-     *             in case we get error finding the VM or host or access errors or other internal errors.
-     * @throws ConcurrentOperationException
-     *             if there are multiple users working on the same VM.
-     * @throws ResourceUnavailableException
-     *             if the destination host to migrate the VM is not currently available.
-     * @throws VirtualMachineMigrationException
-     *             if the VM to be migrated is not in Running state
+     * @throws ManagementServerException        in case we get error finding the VM
+     *                                          or host or access errors or other
+     *                                          internal errors.
+     * @throws ConcurrentOperationException     if there are multiple users working
+     *                                          on the same VM.
+     * @throws ResourceUnavailableException     if the destination host to migrate
+     *                                          the VM is not currently available.
+     * @throws VirtualMachineMigrationException if the VM to be migrated is not in
+     *                                          Running state
      */
-    VirtualMachine migrateVirtualMachineWithVolume(Long vmId, Host destinationHost, Map<String, String> volumeToPool) throws ResourceUnavailableException,
-        ConcurrentOperationException, ManagementServerException, VirtualMachineMigrationException;
+    VirtualMachine migrateVirtualMachineWithVolume(Long vmId, Host destinationHost, Map<String, String> volumeToPool)
+            throws ResourceUnavailableException, ConcurrentOperationException, ManagementServerException,
+            VirtualMachineMigrationException;
 
-    UserVm moveVMToUser(AssignVMCmd moveUserVMCmd) throws ResourceAllocationException, ConcurrentOperationException, ResourceUnavailableException,
-        InsufficientCapacityException;
+    UserVm moveVMToUser(AssignVMCmd moveUserVMCmd) throws ResourceAllocationException, ConcurrentOperationException,
+            ResourceUnavailableException, InsufficientCapacityException;
 
     VirtualMachine vmStorageMigration(Long vmId, StoragePool destPool);
 
     UserVm restoreVM(RestoreVMCmd cmd) throws InsufficientCapacityException, ResourceUnavailableException;
 
-    UserVm restoreVirtualMachine(Account caller, long vmId, Long newTemplateId) throws InsufficientCapacityException, ResourceUnavailableException;
+    UserVm restoreVirtualMachine(Account caller, long vmId, Long newTemplateId)
+            throws InsufficientCapacityException, ResourceUnavailableException;
 
-    UserVm upgradeVirtualMachine(ScaleVMCmd cmd) throws ResourceUnavailableException, ConcurrentOperationException, ManagementServerException,
-        VirtualMachineMigrationException;
+    UserVm upgradeVirtualMachine(ScaleVMCmd cmd) throws ResourceUnavailableException, ConcurrentOperationException,
+            ManagementServerException, VirtualMachineMigrationException;
+
+    // Vines
+    public UserVm upgradeVirtualMachine(long vmId, long newServiceOfferingId) throws ResourceUnavailableException,
+            ConcurrentOperationException, ManagementServerException, VirtualMachineMigrationException;
 
     UserVm expungeVm(long vmId) throws ResourceUnavailableException, ConcurrentOperationException;
 
     /**
      * Finds and returns an encrypted password for a VM.
      *
-     * @param  userVmId
+     * @param userVmId
      * @return Base64 encoded userdata
      */
     String getVmUserData(long vmId);
 
     /**
      * determin whether the uservm should be visible to the end user
-     * @return  value of the display flag
+     *
+     * @return value of the display flag
      */
     public boolean isDisplayResourceEnabled(Long vmId);
 
     void collectVmDiskStatistics(UserVm userVm);
 
-    void collectVmNetworkStatistics (UserVm userVm);
+    void collectVmNetworkStatistics(UserVm userVm);
 
-    UserVm importVM(final DataCenter zone, final Host host, final VirtualMachineTemplate template, final String instanceName, final String displayName, final Account owner, final String userData, final Account caller, final Boolean isDisplayVm, final String keyboard,
-                    final long accountId, final long userId, final ServiceOffering serviceOffering, final String sshPublicKey,
-                    final String hostName, final HypervisorType hypervisorType, final Map<String, String> customParameters, final VirtualMachine.PowerState powerState) throws InsufficientCapacityException;
+    UserVm importVM(final DataCenter zone, final Host host, final VirtualMachineTemplate template,
+            final String instanceName, final String displayName, final Account owner, final String userData,
+            final Account caller, final Boolean isDisplayVm, final String keyboard, final long accountId,
+            final long userId, final ServiceOffering serviceOffering, final String sshPublicKey, final String hostName,
+            final HypervisorType hypervisorType, final Map<String, String> customParameters,
+            final VirtualMachine.PowerState powerState) throws InsufficientCapacityException;
 
     /**
      * Unmanage a guest VM from CloudStack
+     *
      * @return true if the VM is successfully unmanaged, false if not.
      */
     boolean unmanageUserVM(Long vmId);
+
+    // Vines
+    public UserVm restoreVM(Account caller, long vmId, Long newTemplateId)
+            throws InsufficientCapacityException, ResourceUnavailableException;
 }
