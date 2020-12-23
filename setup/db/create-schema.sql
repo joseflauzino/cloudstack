@@ -28,6 +28,12 @@ DROP TABLE IF EXISTS `cloud`.`user`;
 DROP TABLE IF EXISTS `cloud`.`user_ip_address`;
 DROP TABLE IF EXISTS `cloud`.`user_statistics`;
 DROP TABLE IF EXISTS `cloud`.`vm_template`;
+DROP TABLE IF EXISTS `cloud`.`vnfp`;
+DROP TABLE IF EXISTS `cloud`.`vnf`;
+DROP TABLE IF EXISTS `cloud`.`vnf_platform`;
+DROP TABLE IF EXISTS `cloud`.`vnffgd`;
+DROP TABLE IF EXISTS `cloud`.`vnfd`;
+DROP TABLE IF EXISTS `cloud`.`sfc`;
 DROP TABLE IF EXISTS `cloud`.`vm_instance`;
 DROP TABLE IF EXISTS `cloud`.`domain_router`;
 DROP TABLE IF EXISTS `cloud`.`event`;
@@ -448,6 +454,12 @@ CREATE TABLE `cloud`.`sequence` (
 
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vm_instance_seq', 1);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vm_template_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnf_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnf_platform_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnffgd_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnfp_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnfd_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('sfc_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('public_mac_address_seq', 1);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('private_mac_address_seq', 1);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('storage_pool_seq', 200);
@@ -1065,6 +1077,83 @@ CREATE TABLE  `cloud`.`vm_template` (
   INDEX `i_vm_template__removed`(`removed`),
   INDEX `i_vm_template__public`(`public`),
   CONSTRAINT `uc_vm_template__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`vnf` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `name` varchar(255) NOT NULL,
+  `vnfp_id` varchar(255) NOT NULL COMMENT 'the related vnfp uuid',
+  `vm_id` bigint unsigned COMMENT 'the related VM ID',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_vnfp__removed`(`removed`),
+  CONSTRAINT `uc_vnf__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`vnf_platform` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `vnf_platform_name` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `driver_name` varchar(255) NOT NULL,
+  `default_nic` varchar(255) NOT NULL,
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_vnfp__removed`(`removed`),
+  CONSTRAINT `uc_vnf__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`vnffgd` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `url` varchar(255) NOT NULL COMMENT 'the url where the vnffgd exists externally',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_vnffgd__removed`(`removed`),
+  CONSTRAINT `uc_vnffgd__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`vnfp` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `name` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL COMMENT 'the url where the vnfd exists externally',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_vnfp__removed`(`removed`),
+  CONSTRAINT `uc_vnfp__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`vnfd` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `unique_name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `uuid` varchar(40),
+  `url` varchar(255) NULL COMMENT 'the url where the vnfd exists externally',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  `display_text` varchar(4096) NULL COMMENT 'Description text set by the admin for display purpose only',
+  `service_offering_id` bigint unsigned NOT NULL COMMENT 'service offering id',
+  PRIMARY KEY  (`id`),
+  INDEX `i_vnfd__removed`(`removed`),
+  CONSTRAINT `fk_vnfd__service_offering_id` FOREIGN KEY `fk_vnfd__service_offering_id` (`service_offering_id`) REFERENCES `service_offering` (`id`),
+  CONSTRAINT `uc_vnfd__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`sfc` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `vnffgd_id` varchar(255) NOT NULL COMMENT 'vnffgd id',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_sfc__removed`(`removed`),
+  CONSTRAINT `uc_sfc__uuid` UNIQUE (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cloud`.`vm_template_details` (
