@@ -57,6 +57,7 @@
         <module>api/discovery</module>
         <module>api/rate-limit</module>
         <module>api/solidfire-intg-test</module>
+        <module>api/vines</module>
 
         <module>backup/dummy</module>
 

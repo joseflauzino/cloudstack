@@ -623,6 +623,19 @@ public class EventTypes {
     // Storage Policies
     public static final String EVENT_IMPORT_VCENTER_STORAGE_POLICIES = "IMPORT.VCENTER.STORAGE.POLICIES";
 
+    // Vines (NFV)
+    public static final String EVENT_SFC_CREATE = "SFC.CREATE";
+    public static final String EVENT_VNF_PLATFORM_CREATE = "VNF.PLATFORM.CREATE";
+    public static final String EVENT_VNFFGD_CREATE = "VNFFGD.CREATE";
+    public static final String EVENT_VNFP_CREATE = "VNFP.CREATE";
+    public static final String EVENT_VNF_DESTROY = "VNF.DESTROY";
+    public static final String EVENT_PUSH_VNFP = "PUSH.VNFP";
+    public static final String EVENT_HANDLE_NOTIFICATION = "HANDLE.NOTIFICATION";
+    public static final String EVENT_RECOVERY_VNF = "RECOVERY.VNF";
+    public static final String EVENT_INSTALL_FUNCTION = "INSTALL.FUNCTION";
+    public static final String EVENT_START_FUNCTION = "START.FUNCTION";
+    public static final String EVENT_STOP_FUNCTION = "STOP.FUNCTION";
+
     static {
 
         // TODO: need a way to force author adding event types to declare the entity details as well, with out braking

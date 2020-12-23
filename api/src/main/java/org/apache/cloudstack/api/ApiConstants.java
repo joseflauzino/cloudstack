@@ -590,10 +590,19 @@ public class ApiConstants {
     public static final String ODL_TRANSPORT_ZONE_UUID = "transportzoneuuid";
     public static final String ODL_GATEWAYSERVICE_UUID = "l3gatewayserviceuuid";
 
+    // VNF Manager
+    public static final String VINESTEST_ID = "vinestestid";
+    public static final String VINESTEST_NAME = "vinestestname";
+    public static final String VNFP = "vnfp";
+    public static final String VNF_ID = "vnfid";
+    public static final String VNFD_ID = "vnfdid";
+    public static final String VNFP_ID = "vnfpid";
+
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_ID = "vsmdeviceid";
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_NAME = "vsmdevicename";
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_STATE = "vsmdevicestate";
-    // Would we need to have a capacity field for Cisco N1KV VSM? Max hosts managed by it perhaps? May remove this
+    // Would we need to have a capacity field for Cisco N1KV VSM? Max hosts managed
+    // by it perhaps? May remove this
     // later.
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_CAPACITY = "vsmdevicecapacity";
     public static final String CISCO_NEXUS_VSM_NAME = "vsmname";
@@ -783,7 +792,8 @@ public class ApiConstants {
             + " and just a plain ascii/utf8 representation of a hexadecimal string. If it is required to\n"
             + " use another algorithm the hexadecimal string is to be prefixed with a string of the form,\n"
             + " \"{<algorithm>}\", not including the double quotes. In this <algorithm> is the exact string\n"
-            + " representing the java supported algorithm, i.e. MD5 or SHA-256. Note that java does not\n" + " contain an algorithm called SHA256 or one called sha-256, only SHA-256.";
+            + " representing the java supported algorithm, i.e. MD5 or SHA-256. Note that java does not\n"
+            + " contain an algorithm called SHA256 or one called sha-256, only SHA-256.";
 
     public static final String HAS_ANNOTATION = "hasannotation";
     public static final String LAST_ANNOTATED = "lastannotated";
