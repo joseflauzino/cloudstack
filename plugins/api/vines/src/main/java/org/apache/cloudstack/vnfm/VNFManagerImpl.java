@@ -303,7 +303,7 @@ public class VNFManagerImpl implements VNFManager {
     private void waitVmInitialize(VnfVO vnfVO) {
         // Wait for the VM to be up (polling)
         System.out.println("Waiting VNF initialize");
-        int n = 30; // number of attempts
+        int n = 45; // number of attempts
         for (int i = 0; i < n; i++) {
             System.out.println("Getting VNF status " + i);
             EMSOperationResponse vnfStatusResponse = sendRequest("vnfstatus", prepareLifecycleUrl("vnfstatus"),
@@ -316,7 +316,7 @@ public class VNFManagerImpl implements VNFManager {
                         "Number of attempts to get EMS status has been exceeded. VNF ID: " + vnfVO.getUuid());
             }
             try {
-                Thread.sleep(4000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
