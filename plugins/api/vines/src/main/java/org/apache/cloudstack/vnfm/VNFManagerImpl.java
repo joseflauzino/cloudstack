@@ -652,7 +652,7 @@ public class VNFManagerImpl implements VNFManager {
          * TODO: - get host IP based on VNF; - get port from DB (needs to create Vines'
          * configuration table)
          */
-        return "http://192.168.122.11:9000/api/lifecycle/" + cmd;
+        return "http://192.168.122.48:9000/api/lifecycle/" + cmd;
     }
 
     private String prepareLifecycleUrlParam(String vnfUuid) {
