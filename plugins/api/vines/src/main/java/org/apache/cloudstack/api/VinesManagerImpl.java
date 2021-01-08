@@ -20,6 +20,7 @@ import org.apache.cloudstack.vnfm.api.command.ListVnfsCmd;
 import org.apache.cloudstack.vnfm.api.command.NotifyVnfStateCmd;
 import org.apache.cloudstack.vnfm.api.command.PushVnfpCmd;
 import org.apache.cloudstack.vnfm.api.command.RecoveryVNFCmd;
+import org.apache.cloudstack.vnfm.api.command.RegisterEmsCmd;
 import org.apache.cloudstack.vnfm.api.command.ScaleVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.StartFunctionCmd;
 import org.apache.cloudstack.vnfm.api.command.StopFunctionCmd;
@@ -49,6 +50,7 @@ public class VinesManagerImpl implements VinesManager {
         cmdList.add(StartFunctionCmd.class);
         cmdList.add(StopFunctionCmd.class);
         cmdList.add(CreateVnfpCmd.class);
+        cmdList.add(RegisterEmsCmd.class);
         cmdList.add(PushVnfpCmd.class);
         cmdList.add(NotifyVnfStateCmd.class);
         cmdList.add(RecoveryVNFCmd.class);
