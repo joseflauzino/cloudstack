@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS `cloud`.`user_ip_address`;
 DROP TABLE IF EXISTS `cloud`.`user_statistics`;
 DROP TABLE IF EXISTS `cloud`.`vm_template`;
 DROP TABLE IF EXISTS `cloud`.`vnfp`;
+DROP TABLE IF EXISTS `cloud`.`ems`;
 DROP TABLE IF EXISTS `cloud`.`vnf`;
 DROP TABLE IF EXISTS `cloud`.`vnf_platform`;
 DROP TABLE IF EXISTS `cloud`.`vnffgd`;
@@ -458,6 +459,7 @@ INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnf_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnf_platform_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnffgd_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnfp_seq', 200);
+INSERT INTO `cloud`.`sequence` (name, value) VALUES ('ems_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('vnfd_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('sfc_seq', 200);
 INSERT INTO `cloud`.`sequence` (name, value) VALUES ('public_mac_address_seq', 1);
@@ -1127,6 +1129,18 @@ CREATE TABLE  `cloud`.`vnfp` (
   PRIMARY KEY  (`id`),
   INDEX `i_vnfp__removed`(`removed`),
   CONSTRAINT `uc_vnfp__uuid` UNIQUE (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `cloud`.`ems` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `uuid` varchar(40),
+  `name` varchar(255) NOT NULL,
+  `ip` varchar(255) NOT NULL COMMENT 'the EMS IP address',
+  `created` datetime NOT NULL COMMENT 'Date created',
+  `removed` datetime COMMENT 'Date removed if not null',
+  PRIMARY KEY  (`id`),
+  INDEX `i_ems__removed`(`removed`),
+  CONSTRAINT `uc_ems__uuid` UNIQUE (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `cloud`.`vnfd` (

@@ -30,6 +30,7 @@ import org.apache.cloudstack.vnfm.api.command.ListVnfpsCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfsCmd;
 import org.apache.cloudstack.vnfm.api.command.NotifyVnfStateCmd;
 import org.apache.cloudstack.vnfm.api.command.RecoveryVNFCmd;
+import org.apache.cloudstack.vnfm.api.command.RegisterEmsCmd;
 import org.apache.cloudstack.vnfm.api.command.ScaleVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.StartFunctionCmd;
 import org.apache.cloudstack.vnfm.api.command.StopFunctionCmd;
@@ -37,7 +38,9 @@ import org.apache.cloudstack.vnfm.api.response.EMSOperationResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfStateNotificationResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfpResponse;
+import org.apache.cloudstack.vnfm.dao.EmsDao;
 import org.apache.cloudstack.vnfm.dao.VnfpDao;
+import org.apache.cloudstack.vnfm.vo.EmsVO;
 import org.apache.cloudstack.vnfm.vo.VnfpVO;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -108,6 +111,8 @@ public class VNFManagerImpl implements VNFManager {
     private VnfPlatformDao _vnfPlatformDao;
     @Inject
     private VnfpDao _vnfpDao;
+    @Inject
+    private EmsDao _emsDao;
     @Inject
     private NFVOrchestrator _nfvo;
 
@@ -503,6 +508,16 @@ public class VNFManagerImpl implements VNFManager {
             }
         }
         _vnfpDao.persist(vo);
+        return vo;
+    }
+    
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_VNFP_CREATE, eventDescription = "Creating the VNFP", async = true)
+    public EmsVO registerEms(RegisterEmsCmd cmd) {
+        String name = cmd.getName();
+        String ip = cmd.getIp();
+        EmsVO vo = new EmsVO(name, ip);
+        _emsDao.persist(vo);
         return vo;
     }
 

@@ -11,6 +11,7 @@ import org.apache.cloudstack.vnfm.api.command.ListVnfpsCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfsCmd;
 import org.apache.cloudstack.vnfm.api.command.NotifyVnfStateCmd;
 import org.apache.cloudstack.vnfm.api.command.RecoveryVNFCmd;
+import org.apache.cloudstack.vnfm.api.command.RegisterEmsCmd;
 import org.apache.cloudstack.vnfm.api.command.ScaleVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.StartFunctionCmd;
 import org.apache.cloudstack.vnfm.api.command.StopFunctionCmd;
@@ -18,6 +19,7 @@ import org.apache.cloudstack.vnfm.api.response.EMSOperationResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfStateNotificationResponse;
 import org.apache.cloudstack.vnfm.api.response.VnfpResponse;
+import org.apache.cloudstack.vnfm.vo.EmsVO;
 import org.apache.cloudstack.vnfm.vo.VnfpVO;
 
 import com.cloud.exception.ConcurrentOperationException;
@@ -117,6 +119,15 @@ public interface VNFManager {
      * @return the VNFP VO
      */
     public VnfpVO createVnfp(CreateVnfpCmd cmd);
+    
+    /**
+     * Register an EMS in the VNFM
+     *
+     * @param name the EMS name
+     * @param ipaddress  the EMS IP address
+     * @return the EMS VO
+     */
+    public EmsVO registerEms(RegisterEmsCmd cmd);
 
     /**
      * List one or all VNF Packages
