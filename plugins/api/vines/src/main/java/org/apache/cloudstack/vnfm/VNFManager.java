@@ -119,12 +119,12 @@ public interface VNFManager {
      * @return the VNFP VO
      */
     public VnfpVO createVnfp(CreateVnfpCmd cmd);
-    
+
     /**
      * Register an EMS in the VNFM
      *
-     * @param name the EMS name
-     * @param ipaddress  the EMS IP address
+     * @param name      the EMS name
+     * @param ipaddress the EMS IP address
      * @return the EMS VO
      */
     public EmsVO registerEms(RegisterEmsCmd cmd);

@@ -510,7 +510,7 @@ public class VNFManagerImpl implements VNFManager {
         _vnfpDao.persist(vo);
         return vo;
     }
-    
+
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_VNFP_CREATE, eventDescription = "Creating the VNFP", async = true)
     public EmsVO registerEms(RegisterEmsCmd cmd) {

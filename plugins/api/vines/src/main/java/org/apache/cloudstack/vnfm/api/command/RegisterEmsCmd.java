@@ -38,7 +38,7 @@ public class RegisterEmsCmd extends BaseCmd {
             ApiArgValidator.NotNullOrEmpty })
     private String name;
 
-    @Parameter(name = ApiConstants.IP_ADDRESS,type = CommandType.STRING, required = true, description = "the EMS IP.", validations = {
+    @Parameter(name = ApiConstants.IP_ADDRESS, type = CommandType.STRING, required = true, description = "the EMS IP.", validations = {
             ApiArgValidator.NotNullOrEmpty })
     private String ip;
 
