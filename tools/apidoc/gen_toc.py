@@ -198,7 +198,28 @@ known_categories = {
     'UnmanagedInstance': 'Virtual Machine',
     'Rolling': 'Rolling Maintenance',
     'importVsphereStoragePolicies' : 'vSphere storage policies',
-    'listVsphereStoragePolicies' : 'vSphere storage policies'
+    'listVsphereStoragePolicies' : 'vSphere storage policies',
+    'deployVnf' : 'NFV',
+    'destroyVnf' : 'NFV',
+    'listVnfds' : 'NFV',
+    'listVnfps' : 'NFV',
+    'listVnfs' : 'NFV',
+    'getFunctionStatus' : 'NFV',
+    'installFunction' : 'NFV',
+    'startFunction' : 'NFV',
+    'stopFunction' : 'NFV',
+    'createVnfp' : 'NFV',
+    'registerEms' : 'NFV',
+    'pushVnfp' : 'NFV',
+    'notifyVnfState' : 'NFV',
+    'recoveryVnf' : 'NFV',
+    'scaleVnf' : 'NFV',
+    'createVnffgd' : 'NFV',
+    'listVnffgds' : 'NFV',
+    'createSfc' : 'NFV',
+    'listSfcs' : 'NFV',
+    'createVnfPlatform' : 'NFV',
+    'listVnfPlatforms' : 'NFV'
 }
 
 
