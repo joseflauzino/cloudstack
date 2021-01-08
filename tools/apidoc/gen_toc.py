@@ -219,7 +219,7 @@ known_categories = {
     'createSfc' : 'NFV',
     'listSfcs' : 'NFV',
     'createVnfPlatform' : 'NFV',
-    'listVnfPlatforms' : 'NFV'
+    'listVnfPlatform' : 'NFV'
 }
 
 
