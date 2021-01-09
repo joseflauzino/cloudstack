@@ -18,18 +18,23 @@ public class EmsResponse extends BaseResponse {
     @Param(description = "the EMS name")
     private String name;
 
-    @SerializedName("url")
+    @SerializedName("ip")
     @Param(description = "the EMS IP address")
     private String emsIp;
+
+    @SerializedName("port")
+    @Param(description = "the EMS IP address")
+    private String emsPort;
 
     @SerializedName(ApiConstants.CREATED)
     @Param(description = "the date this EMS was created")
     private Date created;
 
-    public EmsResponse(String emsId, String name, String emsIp, Date created) {
+    public EmsResponse(String emsId, String name, String emsIp, String emsPort, Date created) {
         this.emsId = emsId;
         this.name = name;
         this.emsIp = emsIp;
+        this.emsPort = emsPort;
         this.created = created;
     }
 
@@ -41,8 +46,12 @@ public class EmsResponse extends BaseResponse {
         return name;
     }
 
-    public String getVnfpUrl() {
+    public String getEmsIp() {
         return emsIp;
+    }
+
+    public String getEmsPort() {
+        return emsPort;
     }
 
     public Date getCreated() {

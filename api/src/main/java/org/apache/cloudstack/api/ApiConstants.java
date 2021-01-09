@@ -597,6 +597,7 @@ public class ApiConstants {
     public static final String VNF_ID = "vnfid";
     public static final String VNFD_ID = "vnfdid";
     public static final String VNFP_ID = "vnfpid";
+    public static final String EMS_ID = "emsid";
 
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_ID = "vsmdeviceid";
     public static final String EXTERNAL_SWITCH_MGMT_DEVICE_NAME = "vsmdevicename";

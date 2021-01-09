@@ -22,14 +22,19 @@ public class VnfResponse extends BaseResponse {
     @Param(description = "the VNF Package ID")
     private String vnfpId;
 
+    @SerializedName("emsid")
+    @Param(description = "the EMS ID")
+    private String emsId;
+
     @SerializedName(ApiConstants.CREATED)
     @Param(description = "the date this VNF was deployed")
     private Date created;
 
-    public VnfResponse(String vnfId, String name, String vnfpId, Date created) {
+    public VnfResponse(String vnfId, String name, String vnfpId, String emsId, Date created) {
         this.vnfId = vnfId;
         this.name = name;
         this.vnfpId = vnfpId;
+        this.emsId = emsId;
         this.created = created;
     }
 
@@ -43,6 +48,10 @@ public class VnfResponse extends BaseResponse {
 
     public String getVnfpId() {
         return vnfpId;
+    }
+
+    public String getEmsId() {
+        return emsId;
     }
 
     public Date getCreated() {

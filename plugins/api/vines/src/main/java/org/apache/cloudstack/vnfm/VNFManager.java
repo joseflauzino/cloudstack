@@ -6,7 +6,7 @@ import org.apache.cloudstack.vnfm.api.command.CreateVnfpCmd;
 import org.apache.cloudstack.vnfm.api.command.DeployVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.DestroyVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.GetFunctionStatusCmd;
-import org.apache.cloudstack.vnfm.api.command.InstallFunctionCmd;
+import org.apache.cloudstack.vnfm.api.command.GetVnfIsUpCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfpsCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfsCmd;
 import org.apache.cloudstack.vnfm.api.command.NotifyVnfStateCmd;
@@ -56,7 +56,7 @@ public interface VNFManager {
     public UserVm createVnfVm(DeployVNFCmd cmd) throws InsufficientCapacityException, ResourceUnavailableException,
             ConcurrentOperationException, StorageUnavailableException, ResourceAllocationException;
 
-    public VnfVO createVnfRecord(String vnfpId, long vmId);
+    public VnfVO createVnfRecord(String vnfpId, String emsId, long vmId);
 
     /**
      * List one or all Virtual Network Functions
@@ -146,12 +146,12 @@ public interface VNFManager {
     public EMSOperationResponse pushVnfp(String vnfUuid);
 
     /**
-     * Install the Network Function within the VM
+     * Register VNF in EMS
      *
-     * @param installFunctionCmd the VNF UUID to send the install command
-     * @return the Network Function status (Running or Stopped)
+     * @param vnfVO the VNF VO
+     * @return true if success, false otherwise
      */
-    public EMSOperationResponse installFunction(InstallFunctionCmd cmd);
+    public EMSOperationResponse registerVnfInEms(VnfVO vnfVO);
 
     /**
      * Start the Network Function within the VM
@@ -176,6 +176,14 @@ public interface VNFManager {
      * @return the Network Function status (Running or Stopped)
      */
     public EMSOperationResponse getFunctionStatus(GetFunctionStatusCmd cmd);
+
+    /**
+     * VNF is up?
+     *
+     * @param vnfUuid the VNF UUID
+     * @return true or false
+     */
+    public EMSOperationResponse getVnfIsUp(GetVnfIsUpCmd cmd);
 
     public EMSOperationResponse sendOrchestrationCmd(String type, String url, String parameters, String httpMethod);
 }

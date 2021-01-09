@@ -48,6 +48,9 @@ public class VnfVO implements Vnf {
     @Column(name = "vnfp_id")
     private String vnfpid;
 
+    @Column(name = "ems_id")
+    private String emsid;
+
     @Column(name = "name")
     private String name;
 
@@ -96,6 +99,14 @@ public class VnfVO implements Vnf {
         this.vnfpid = vnfpid;
     }
 
+    public String getEmsId() {
+        return emsid;
+    }
+
+    public void setEmsId(String emsid) {
+        this.emsid = emsid;
+    }
+
     public long getVmId() {
         return vmid;
     }
@@ -108,9 +119,10 @@ public class VnfVO implements Vnf {
     /***
      * Constructors
      */
-    public VnfVO(String name, String vnfpid, long vmid) {
+    public VnfVO(String name, String vnfpid, String emsid, long vmid) {
         this.name = name;
         this.vnfpid = vnfpid;
+        this.emsid = emsid;
         this.vmid = vmid;
     }
 

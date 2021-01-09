@@ -48,6 +48,9 @@ public class DeployVNFCmd extends BaseAsyncCreateCustomIdCmd {
     @Parameter(name = ApiConstants.VNFP_ID, type = CommandType.STRING, required = true, description = "The VNF Package ID")
     private String vnfpId;
 
+    @Parameter(name = ApiConstants.EMS_ID, type = CommandType.STRING, required = true, description = "The EMS ID that the VNF will be associated with")
+    private String emsId;
+
     @Parameter(name = ApiConstants.ZONE_ID, type = CommandType.UUID, entityType = ZoneResponse.class, required = true, description = "availability zone for the virtual machine")
     private Long zoneId;
 
@@ -77,6 +80,10 @@ public class DeployVNFCmd extends BaseAsyncCreateCustomIdCmd {
 
     public String getVnfpId() {
         return vnfpId;
+    }
+
+    public String getEmsId() {
+        return emsId;
     }
 
     public Long getHostId() {
@@ -173,7 +180,7 @@ public class DeployVNFCmd extends BaseAsyncCreateCustomIdCmd {
 
         if (result != null) {
             VnfResponse response = new VnfResponse(result.getUuid(), result.getName(), result.getVnfpId(),
-                    result.getCreated());
+                    result.getEmsId(), result.getCreated());
             response.setObjectName("vnf");
             // UserVmResponse response = _responseGenerator
             // .createUserVmResponse(ResponseView.Restricted, "virtualmachine",
@@ -192,7 +199,7 @@ public class DeployVNFCmd extends BaseAsyncCreateCustomIdCmd {
             if (vm == null) {
                 throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, "Failed to create VNF VM");
             }
-            VnfVO vnf = _vnfManager.createVnfRecord(vnfpId, vm.getId());
+            VnfVO vnf = _vnfManager.createVnfRecord(vnfpId, emsId, vm.getId());
             if (vnf != null) {
                 setEntityId(vnf.getId());
                 setEntityUuid(vnf.getUuid());

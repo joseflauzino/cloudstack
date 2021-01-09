@@ -25,7 +25,7 @@ import org.apache.cloudstack.vnfm.api.command.CreateVnfpCmd;
 import org.apache.cloudstack.vnfm.api.command.DeployVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.DestroyVNFCmd;
 import org.apache.cloudstack.vnfm.api.command.GetFunctionStatusCmd;
-import org.apache.cloudstack.vnfm.api.command.InstallFunctionCmd;
+import org.apache.cloudstack.vnfm.api.command.GetVnfIsUpCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfpsCmd;
 import org.apache.cloudstack.vnfm.api.command.ListVnfsCmd;
 import org.apache.cloudstack.vnfm.api.command.NotifyVnfStateCmd;
@@ -46,10 +46,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -131,7 +129,9 @@ public class VNFManagerImpl implements VNFManager {
 
     // HTTP Methods
     private final static String POST = "POST";
-    // private final static String GET = "GET";
+    private final static String GET = "GET";
+    private final static String PUT = "PUT";
+    private final static String DELETE = "DELETE";
 
     /////////////////////////////////////////////////////
     //////// Virtual Network Functions Commands /////////
@@ -220,12 +220,18 @@ public class VNFManagerImpl implements VNFManager {
     }
 
     @Override
-    public VnfVO createVnfRecord(String vnfpId, long vmId) {
+    public VnfVO createVnfRecord(String vnfpId, String emsId, long vmId) {
         ToscaVnfd vnfd = GetToscaVnfdUtil.readVnfdFile(vnfpId);
         if (vnfd == null) {
             throw new InvalidParameterValueException("Unable to find the VNFD within VNFP: " + vnfpId);
         }
-        VnfVO vnfVO = new VnfVO(vnfd.getVnfName(), vnfpId, vmId);
+        EmsVO emsVO = _emsDao.findByUuid(emsId);
+        if (emsVO == null) {
+            throw new CloudRuntimeException("Unable to find EMS with ID " + emsId);
+        }
+        // TODO: check if the EMS is in the same management network which the VNF is
+        // TODO: check if the EMS support the VNF
+        VnfVO vnfVO = new VnfVO(vnfd.getVnfName(), vnfpId, emsId, vmId);
         _vnfDao.persist(vnfVO);
         return vnfVO;
     }
@@ -285,8 +291,8 @@ public class VNFManagerImpl implements VNFManager {
         }
 
         // Send stop command to VNF
-        EMSOperationResponse response = sendRequest("stop", prepareLifecycleUrl("stop"),
-                prepareLifecycleUrlParam(vnfVO.getUuid()), POST);
+        EMSOperationResponse response = sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfVO.getUuid()), "",
+                POST);
 
         // Restore VM
         UserVm restoredVm = null;
@@ -302,7 +308,8 @@ public class VNFManagerImpl implements VNFManager {
 
         finishVnfDeployment(vnfVO);
 
-        return new VnfResponse(vnfVO.getUuid(), vnfVO.getName(), vnfVO.getVnfpId(), vnfVO.getCreated());
+        return new VnfResponse(vnfVO.getUuid(), vnfVO.getName(), vnfVO.getVnfpId(), vnfVO.getEmsId(),
+                vnfVO.getCreated());
     }
 
     private void waitVmInitialize(VnfVO vnfVO) {
@@ -311,8 +318,7 @@ public class VNFManagerImpl implements VNFManager {
         int n = 45; // number of attempts
         for (int i = 0; i < n; i++) {
             System.out.println("Getting VNF status " + i);
-            EMSOperationResponse vnfStatusResponse = sendRequest("vnfstatus", prepareLifecycleUrl("vnfstatus"),
-                    prepareLifecycleUrlParam(vnfVO.getUuid()), POST);
+            EMSOperationResponse vnfStatusResponse = getVnfIsUp(vnfVO.getUuid());
             if (vnfStatusResponse.isSuccess() && vnfStatusResponse.getData().equals("Running")) {
                 break; // stop polling because VNF VM is up
             }
@@ -362,39 +368,44 @@ public class VNFManagerImpl implements VNFManager {
 
         // Start the network function
         System.out.println("Starting the network function");
-        EMSOperationResponse startResponse = sendRequest("start", prepareLifecycleUrl("start"),
-                prepareLifecycleUrlParam(vnfVO.getUuid()), POST);
+        EMSOperationResponse startResponse = startFunction(vnfVO.getUuid());
         if (!startResponse.isSuccess()) {
             throw new CloudRuntimeException("Unable to start the VNF with ID " + vnfVO.getId());
         }
 
-        return new VnfResponse(vnfVO.getUuid(), vnfVO.getName(), vnfVO.getVnfpId(), vnfVO.getCreated());
+        return new VnfResponse(vnfVO.getUuid(), vnfVO.getName(), vnfVO.getVnfpId(), vnfVO.getEmsId(),
+                vnfVO.getCreated());
     }
 
     private void finishVnfDeployment(VnfVO vnfVO) {
         waitVmInitialize(vnfVO);
 
+        // Register VNF in EMS
+        System.out.println("Registering VNF in EMS");
+        EMSOperationResponse registerVnfInEmsResponse = registerVnfInEms(vnfVO);
+        if (!registerVnfInEmsResponse.isSuccess()) {
+            throw new CloudRuntimeException("Unable to register the VNFP in EMS with ID " + vnfVO.getEmsId());
+        }
+
         // Push the VNF Package to the VM
         System.out.println("Pushing VNFP");
         EMSOperationResponse pushVnfpResponse = pushVnfp(vnfVO);
         if (!pushVnfpResponse.isSuccess()) {
-            throw new CloudRuntimeException("Unable to push VNFP to VNF with ID " + vnfVO.getId());
+            throw new CloudRuntimeException("Unable to push VNFP to VNF with ID " + vnfVO.getUuid());
         }
 
         // Install the network function (application)
         System.out.println("Installing the network function");
-        EMSOperationResponse installResponse = sendRequest("install", prepareLifecycleUrl("install"),
-                prepareLifecycleUrlParam(vnfVO.getUuid()), POST);
+        EMSOperationResponse installResponse = installFunction(vnfVO.getUuid());
         if (!installResponse.isSuccess()) {
             throw new CloudRuntimeException("Unable to install the VNF with ID " + vnfVO.getId());
         }
 
         // Start the network function
         System.out.println("Starting the network function");
-        EMSOperationResponse startResponse = sendRequest("start", prepareLifecycleUrl("start"),
-                prepareLifecycleUrlParam(vnfVO.getUuid()), POST);
+        EMSOperationResponse startResponse = startFunction(vnfVO.getUuid());
         if (!startResponse.isSuccess()) {
-            throw new CloudRuntimeException("Unable to start the VNF with ID " + vnfVO.getId());
+            throw new CloudRuntimeException("Unable to start the VNF with ID " + vnfVO.getUuid());
         }
     }
 
@@ -454,7 +465,8 @@ public class VNFManagerImpl implements VNFManager {
         }
         if (!vnfs.isEmpty()) {
             for (VnfVO vnf : vnfs) {
-                VnfResponse response = new VnfResponse(vnf.getUuid(), vnf.getName(), vnf.getVnfpId(), vnf.getCreated());
+                VnfResponse response = new VnfResponse(vnf.getUuid(), vnf.getName(), vnf.getVnfpId(), vnf.getEmsId(),
+                        vnf.getCreated());
                 response.setObjectName("vnf");
                 responses.add(response);
             }
@@ -514,9 +526,7 @@ public class VNFManagerImpl implements VNFManager {
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_VNFP_CREATE, eventDescription = "Creating the VNFP", async = true)
     public EmsVO registerEms(RegisterEmsCmd cmd) {
-        String name = cmd.getName();
-        String ip = cmd.getIp();
-        EmsVO vo = new EmsVO(name, ip);
+        EmsVO vo = new EmsVO(cmd.getName(), cmd.getIp(), cmd.getPort());
         _emsDao.persist(vo);
         return vo;
     }
@@ -578,12 +588,15 @@ public class VNFManagerImpl implements VNFManager {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         System.out.println("Enviando vnfp");
         try {
-            HttpPost httppost = new HttpPost(prepareLifecycleUrl("pushvnfp"));
+            HttpPost httppost = new HttpPost(prepareLifecycleUrl("vnf", "pushvnfp", vnfVO.getUuid()));
 
             FileBody bin = new FileBody(new File(output_zip_file));
-            StringBody json = new StringBody(prepareLifecycleUrlParam(vnfVO.getUuid()), ContentType.APPLICATION_JSON);
+            // StringBody json = new StringBody(prepareLifecycleUrlParam(vnfVO.getUuid()),
+            // ContentType.APPLICATION_JSON);
 
-            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("json", json).addPart("file", bin).build();
+            // HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("json",
+            // json).addPart("file", bin).build();
+            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).build();
             httppost.addHeader("Accept", "application/json;odata=verbose");
             httppost.setEntity(reqEntity);
 
@@ -632,55 +645,11 @@ public class VNFManagerImpl implements VNFManager {
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_INSTALL_FUNCTION, eventDescription = "Installing the Network Function", async = true)
-    public EMSOperationResponse installFunction(InstallFunctionCmd cmd) {
-        return sendRequest("install", prepareLifecycleUrl("install"), prepareLifecycleUrlParam(cmd.getVnfId()), POST);
-    }
-
-    @Override
-    @ActionEvent(eventType = EventTypes.EVENT_START_FUNCTION, eventDescription = "Starting the Network Function", async = true)
-    public EMSOperationResponse startFunction(StartFunctionCmd cmd) {
-        return sendRequest("start", prepareLifecycleUrl("start"), prepareLifecycleUrlParam(cmd.getVnfId()), POST);
-    }
-
-    @Override
-    @ActionEvent(eventType = EventTypes.EVENT_STOP_FUNCTION, eventDescription = "Stopping the Network Function", async = true)
-    public EMSOperationResponse stopFunction(StopFunctionCmd cmd) {
-        return sendRequest("stop", prepareLifecycleUrl("stop"), prepareLifecycleUrlParam(cmd.getVnfId()), POST);
-    }
-
-    @Override
-    public EMSOperationResponse getFunctionStatus(GetFunctionStatusCmd cmd) {
-        return sendRequest("status", prepareLifecycleUrl("status"), prepareLifecycleUrlParam(cmd.getVnfId()), POST);
-    }
-
-    @Override
-    public EMSOperationResponse sendOrchestrationCmd(String type, String url, String parameters, String httpMethod) {
-        return sendRequest(type, url, parameters, httpMethod);
-    }
-
-    /////////////////////////////////////////////////////
-    ///////////////// Private Utils /////////////////////
-    /////////////////////////////////////////////////////
-
-    private String prepareLifecycleUrl(String cmd) {
-        /*
-         * TODO: - get host IP based on VNF; - get port from DB (needs to create Vines'
-         * configuration table)
-         */
-        return "http://192.168.122.48:9000/api/lifecycle/" + cmd;
-    }
-
-    private String prepareLifecycleUrlParam(String vnfUuid) {
-        // Find VNF
-        VnfVO vnfVO = _vnfDao.findByUuid(vnfUuid);
-        if (vnfVO == null) {
-            throw new CloudRuntimeException("Unable to find VNF with UUID " + vnfUuid);
-        }
-
+    public EMSOperationResponse registerVnfInEms(VnfVO vnfVO) {
         // Find VNF VM
-        VMInstanceVO vnfVm = _nfvo.findVnfVmInstance(vnfUuid);
+        VMInstanceVO vnfVm = _nfvo.findVnfVmInstance(vnfVO.getUuid());
         if (vnfVm == null) {
-            throw new CloudRuntimeException("Unable to the VM of the VNF with UUID " + vnfUuid);
+            throw new CloudRuntimeException("Unable to the VM of the VNF with UUID " + vnfVO.getUuid());
         }
 
         // Read VNFD of the VNF
@@ -691,7 +660,7 @@ public class VNFManagerImpl implements VNFManager {
         String vnfMgmtIp = _nfvo.getVnfVmIp(vnfVm.getId(), mgmtNetGatewayIp); // VNF management IP
 
         // Find (guest network) gateway IP
-        String routerIp = _nfvo.findRouterIP(mgmtNetGatewayIp);
+        // String routerIp = _nfvo.findRouterIP(mgmtNetGatewayIp);
 
         // Detect VNF Platform Driver
         VnfPlatformVO vnfPlatformVO = _vnfPlatformDao.findByUuid(vnfd.getVnfPlatformId());
@@ -699,8 +668,92 @@ public class VNFManagerImpl implements VNFManager {
             throw new CloudRuntimeException("Unable to find VNF Platform Driver with UUID " + vnfd.getVnfPlatformId());
         }
         String vnfPlatform = vnfPlatformVO.getDriverName();
-        return "{\"vnf_ip\":\"" + vnfMgmtIp + "\",\"router_ip\":\"" + routerIp + "\", \"vnf_platform\":\"" + vnfPlatform
-                + "\"}";
+
+        // Find EMS
+        EmsVO emsVO = _emsDao.findByUuid(vnfVO.getEmsId());
+        if (emsVO == null) {
+            throw new CloudRuntimeException("Unable to find EMS with UUID " + vnfVO.getEmsId());
+        }
+
+        return sendRequest("registervnf", prepareLifecycleUrl("ems", "vnf", ""), "{\"vnf_id\":\"" + vnfVO.getUuid()
+                + "\",\"vnf_ip\":\"" + vnfMgmtIp + "\",\"vnf_platform\":\"" + vnfPlatform + "\"}", POST);
+    }
+
+    @ActionEvent(eventType = EventTypes.EVENT_INSTALL_FUNCTION, eventDescription = "Installing the Network Function", async = true)
+    public EMSOperationResponse installFunction(String vnfUuid) {
+        return sendRequest("install", prepareLifecycleUrl("vnf", "install", vnfUuid), "", POST);
+    }
+
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_START_FUNCTION, eventDescription = "Starting the Network Function", async = true)
+    public EMSOperationResponse startFunction(StartFunctionCmd cmd) {
+        return sendRequest("start", prepareLifecycleUrl("vnf", "start", cmd.getVnfId()), "", POST);
+    }
+
+    @ActionEvent(eventType = EventTypes.EVENT_START_FUNCTION, eventDescription = "Starting the Network Function", async = true)
+    public EMSOperationResponse startFunction(String vnfUuid) {
+        return sendRequest("start", prepareLifecycleUrl("vnf", "start", vnfUuid), "", POST);
+    }
+
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_STOP_FUNCTION, eventDescription = "Stopping the Network Function", async = true)
+    public EMSOperationResponse stopFunction(StopFunctionCmd cmd) {
+        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", cmd.getVnfId()), "", POST);
+    }
+
+    @ActionEvent(eventType = EventTypes.EVENT_STOP_FUNCTION, eventDescription = "Stopping the Network Function", async = true)
+    public EMSOperationResponse stopFunction(String vnfUuid) {
+        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfUuid), "", POST);
+    }
+
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_IS_UP, eventDescription = "Checking if VNF is up", async = true)
+    public EMSOperationResponse getVnfIsUp(GetVnfIsUpCmd cmd) {
+        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", cmd.getVnfId()), "", GET);
+    }
+
+    @ActionEvent(eventType = EventTypes.EVENT_IS_UP, eventDescription = "Checking if VNF is up", async = true)
+    private EMSOperationResponse getVnfIsUp(String vnfUuid) {
+        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", vnfUuid), "", GET);
+    }
+
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_FUNCTION_STATUS, eventDescription = "Getting network function status", async = true)
+    public EMSOperationResponse getFunctionStatus(GetFunctionStatusCmd cmd) {
+        return sendRequest("status", prepareLifecycleUrl("vnf", "status", cmd.getVnfId()), "", GET);
+    }
+
+    @Override
+    @ActionEvent(eventType = EventTypes.EVENT_FUNCTION_STATUS, eventDescription = "Getting network function status", async = true)
+    public EMSOperationResponse sendOrchestrationCmd(String type, String url, String parameters, String httpMethod) {
+        return sendRequest(type, url, parameters, httpMethod);
+    }
+
+    /////////////////////////////////////////////////////
+    ///////////////// Private Utils /////////////////////
+    /////////////////////////////////////////////////////
+    /**
+     * Prepare an URL to send to an EMS
+     *
+     * @param cmdType ems, vnf or sfc.
+     * @param cmd     the command to be executed
+     * @param vnfUuid the UUID of the VNF that will be managed (if needed)
+     * @return the URL
+     */
+    private String prepareLifecycleUrl(String cmdType, String cmd, String vnfUuid) {
+        // Find VNF
+        VnfVO vnfVO = _vnfDao.findByUuid(vnfUuid);
+        if (vnfVO == null) {
+            throw new CloudRuntimeException("Unable to find VNF with UUID " + vnfUuid);
+        }
+        // Find EMS
+        EmsVO emsVO = _emsDao.findByUuid(vnfVO.getEmsId());
+        if (emsVO == null) {
+            throw new CloudRuntimeException("Unable to find EMS with UUID " + vnfVO.getEmsId());
+        }
+        String apiVersion = "v1.0";
+        return "http://" + emsVO.getIp() + ":" + emsVO.getPort() + "/" + apiVersion + "/" + cmdType + "/" + cmd + "/"
+                + vnfUuid;
     }
 
     private EMSOperationResponse sendRequest(String type, String urlStr, String urlParameters, String httpMethod) {

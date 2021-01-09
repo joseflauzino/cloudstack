@@ -4,21 +4,19 @@ import javax.inject.Inject;
 
 import org.apache.cloudstack.acl.RoleType;
 import org.apache.cloudstack.api.APICommand;
-import org.apache.cloudstack.api.BaseAsyncCmd;
+import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.context.CallContext;
 import org.apache.cloudstack.vnfm.VNFManager;
 import org.apache.cloudstack.vnfm.api.response.EMSOperationResponse;
 import org.apache.log4j.Logger;
 
-import com.cloud.event.EventTypes;
-
-@APICommand(name = "installFunction", description = "Install the Function into a VNF", responseObject = EMSOperationResponse.class, includeInApiDoc = true, authorized = {
+@APICommand(name = "getVnfIsUp", description = "VNF is up? true or false", responseObject = EMSOperationResponse.class, includeInApiDoc = true, authorized = {
         RoleType.Admin, RoleType.ResourceAdmin, RoleType.DomainAdmin, RoleType.User })
-public class InstallFunctionCmd extends BaseAsyncCmd {
+public class GetVnfIsUpCmd extends BaseCmd {
 
-    public static final Logger s_logger = Logger.getLogger(InstallFunctionCmd.class.getName());
-    private static final String s_name = "lifecycleoperationresponse";
+    public static final Logger s_logger = Logger.getLogger(GetVnfIsUpCmd.class.getName());
+    private static final String s_name = "getvnfisupresponse";
 
     @Inject
     VNFManager _vnfManager;
@@ -27,12 +25,16 @@ public class InstallFunctionCmd extends BaseAsyncCmd {
     //////////////// API parameters /////////////////////
     /////////////////////////////////////////////////////
 
-    @Parameter(name = "vnfid", type = CommandType.STRING, description = "The VNF ID")
+    @Parameter(name = "vnfid", type = CommandType.STRING, description = "the VNF ID")
     private String vnfId;
 
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
+
+    public String getVnfId() {
+        return this.vnfId;
+    }
 
     @Override
     public String getCommandName() {
@@ -44,29 +46,16 @@ public class InstallFunctionCmd extends BaseAsyncCmd {
         return CallContext.current().getCallingAccount().getId();
     }
 
-    public String getVnfId() {
-        return this.vnfId;
-    }
-
-    @Override
-    public String getEventType() {
-        return EventTypes.EVENT_INSTALL_FUNCTION;
-    }
-
-    @Override
-    public String getEventDescription() {
-        return "Installing the Network Function";
-    }
-
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////
 
     @Override
     public void execute() {
-        EMSOperationResponse response = _vnfManager.installFunction(this);
+        EMSOperationResponse response = _vnfManager.getVnfIsUp(this);
         response.setObjectName("operation");
         response.setResponseName(getCommandName());
         this.setResponseObject(response);
     }
+
 }

@@ -38,9 +38,13 @@ public class RegisterEmsCmd extends BaseCmd {
             ApiArgValidator.NotNullOrEmpty })
     private String name;
 
-    @Parameter(name = ApiConstants.IP_ADDRESS, type = CommandType.STRING, required = true, description = "the EMS IP.", validations = {
+    @Parameter(name = ApiConstants.IP_ADDRESS, type = CommandType.STRING, required = true, description = "the EMS Public IP.", validations = {
             ApiArgValidator.NotNullOrEmpty })
     private String ip;
+
+    @Parameter(name = ApiConstants.PORT, type = CommandType.STRING, required = true, description = "the TCP port on which the EMS is listening.", validations = {
+            ApiArgValidator.NotNullOrEmpty })
+    private String port;
 
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
@@ -52,6 +56,10 @@ public class RegisterEmsCmd extends BaseCmd {
 
     public String getIp() {
         return ip;
+    }
+
+    public String getPort() {
+        return port;
     }
 
     @Override
@@ -75,7 +83,7 @@ public class RegisterEmsCmd extends BaseCmd {
         if (vo == null) {
             throw new CloudRuntimeException("Unable to register the EMS " + name);
         }
-        EmsResponse response = new EmsResponse(vo.getUuid(), vo.getName(), vo.getIp(), vo.getCreated());
+        EmsResponse response = new EmsResponse(vo.getUuid(), vo.getName(), vo.getIp(), vo.getPort(), vo.getCreated());
         response.setObjectName("ems");
         response.setResponseName(getCommandName());
         this.setResponseObject(response);

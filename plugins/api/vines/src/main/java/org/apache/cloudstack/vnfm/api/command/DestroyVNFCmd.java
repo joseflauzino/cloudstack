@@ -107,7 +107,7 @@ public class DestroyVNFCmd extends BaseAsyncCmd {
         result = _vnfManager.destroyVnf(this);
         if (result != null) {
             VnfResponse response = new VnfResponse(result.getUuid(), result.getName(), result.getVnfpId(),
-                    result.getCreated());
+                    result.getEmsId(), result.getCreated());
             response.setObjectName("vnf");
             response.setResponseName(getCommandName());
             setResponseObject(response);

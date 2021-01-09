@@ -635,6 +635,8 @@ public class EventTypes {
     public static final String EVENT_INSTALL_FUNCTION = "INSTALL.FUNCTION";
     public static final String EVENT_START_FUNCTION = "START.FUNCTION";
     public static final String EVENT_STOP_FUNCTION = "STOP.FUNCTION";
+    public static final String EVENT_IS_UP = "IS.UP";
+    public static final String EVENT_FUNCTION_STATUS = "FUNCTION.STATUS";
 
     static {
 

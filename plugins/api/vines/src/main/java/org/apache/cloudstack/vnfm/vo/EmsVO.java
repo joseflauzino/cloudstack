@@ -49,6 +49,9 @@ public class EmsVO implements Ems {
     @Column(name = "ip")
     private String ip;
 
+    @Column(name = "port")
+    private String port;
+
     @Column(name = GenericDao.CREATED_COLUMN)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date created;
@@ -83,13 +86,22 @@ public class EmsVO implements Ems {
         return ip;
     }
 
+    public String getPort() {
+        return port;
+    }
+
     public void setIp(String ip) {
         this.ip = ip;
     }
 
-    public EmsVO(String name, String ip) {
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public EmsVO(String name, String ip, String port) {
         this.name = name;
         this.ip = ip;
+        this.port = port;
     }
 
     public EmsVO() {
