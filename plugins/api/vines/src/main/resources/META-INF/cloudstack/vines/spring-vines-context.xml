@@ -35,6 +35,9 @@
 	<bean id="vnfpDaoImpl"
 		class="org.apache.cloudstack.vnfm.dao.VnfpDaoImpl">
 	</bean>
+	<bean id="emsDaoImpl"
+        class="org.apache.cloudstack.vnfm.dao.EmsDaoImpl">
+    </bean>
 	<bean id="vnfManagerImpl"
 		class="org.apache.cloudstack.vnfm.VNFManagerImpl">
 	</bean>
