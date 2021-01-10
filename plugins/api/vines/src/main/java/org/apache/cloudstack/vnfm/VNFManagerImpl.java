@@ -378,14 +378,14 @@ public class VNFManagerImpl implements VNFManager {
     }
 
     private void finishVnfDeployment(VnfVO vnfVO) {
-        waitVmInitialize(vnfVO);
-
         // Register VNF in EMS
         System.out.println("Registering VNF in EMS");
         EMSOperationResponse registerVnfInEmsResponse = registerVnfInEms(vnfVO);
         if (!registerVnfInEmsResponse.isSuccess()) {
             throw new CloudRuntimeException("Unable to register the VNFP in EMS with ID " + vnfVO.getEmsId());
         }
+
+        waitVmInitialize(vnfVO);
 
         // Push the VNF Package to the VM
         System.out.println("Pushing VNFP");
