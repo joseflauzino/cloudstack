@@ -291,7 +291,7 @@ public class VNFManagerImpl implements VNFManager {
         }
 
         // Send stop command to VNF
-        EMSOperationResponse response = sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfVO.getUuid()), "",
+        EMSOperationResponse response = sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfVO.getUuid(),true), "",
                 POST);
 
         // Restore VM
@@ -382,7 +382,7 @@ public class VNFManagerImpl implements VNFManager {
         System.out.println("Registering VNF in EMS");
         EMSOperationResponse registerVnfInEmsResponse = registerVnfInEms(vnfVO);
         if (!registerVnfInEmsResponse.isSuccess()) {
-            throw new CloudRuntimeException("Unable to register the VNFP in EMS with ID " + vnfVO.getEmsId());
+            throw new CloudRuntimeException("Unable to register the VNF in EMS with ID " + vnfVO.getEmsId());
         }
 
         waitVmInitialize(vnfVO);
@@ -588,7 +588,7 @@ public class VNFManagerImpl implements VNFManager {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         System.out.println("Enviando vnfp");
         try {
-            HttpPost httppost = new HttpPost(prepareLifecycleUrl("vnf", "pushvnfp", vnfVO.getUuid()));
+            HttpPost httppost = new HttpPost(prepareLifecycleUrl("vnf", "pushvnfp", vnfVO.getUuid(),true));
 
             FileBody bin = new FileBody(new File(output_zip_file));
             // StringBody json = new StringBody(prepareLifecycleUrlParam(vnfVO.getUuid()),
@@ -675,52 +675,52 @@ public class VNFManagerImpl implements VNFManager {
             throw new CloudRuntimeException("Unable to find EMS with UUID " + vnfVO.getEmsId());
         }
 
-        return sendRequest("registervnf", prepareLifecycleUrl("ems", "vnf", ""), "{\"vnf_id\":\"" + vnfVO.getUuid()
+        return sendRequest("registervnf", prepareLifecycleUrl("ems", "vnf", vnfVO.getUuid(),false), "{\"vnf_id\":\"" + vnfVO.getUuid()
                 + "\",\"vnf_ip\":\"" + vnfMgmtIp + "\",\"vnf_platform\":\"" + vnfPlatform + "\"}", POST);
     }
 
     @ActionEvent(eventType = EventTypes.EVENT_INSTALL_FUNCTION, eventDescription = "Installing the Network Function", async = true)
     public EMSOperationResponse installFunction(String vnfUuid) {
-        return sendRequest("install", prepareLifecycleUrl("vnf", "install", vnfUuid), "", POST);
+        return sendRequest("install", prepareLifecycleUrl("vnf", "install", vnfUuid,true), "", POST);
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_START_FUNCTION, eventDescription = "Starting the Network Function", async = true)
     public EMSOperationResponse startFunction(StartFunctionCmd cmd) {
-        return sendRequest("start", prepareLifecycleUrl("vnf", "start", cmd.getVnfId()), "", POST);
+        return sendRequest("start", prepareLifecycleUrl("vnf", "start", cmd.getVnfId(),true), "", POST);
     }
 
     @ActionEvent(eventType = EventTypes.EVENT_START_FUNCTION, eventDescription = "Starting the Network Function", async = true)
     public EMSOperationResponse startFunction(String vnfUuid) {
-        return sendRequest("start", prepareLifecycleUrl("vnf", "start", vnfUuid), "", POST);
+        return sendRequest("start", prepareLifecycleUrl("vnf", "start", vnfUuid,true), "", POST);
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_STOP_FUNCTION, eventDescription = "Stopping the Network Function", async = true)
     public EMSOperationResponse stopFunction(StopFunctionCmd cmd) {
-        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", cmd.getVnfId()), "", POST);
+        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", cmd.getVnfId(),true), "", POST);
     }
 
     @ActionEvent(eventType = EventTypes.EVENT_STOP_FUNCTION, eventDescription = "Stopping the Network Function", async = true)
     public EMSOperationResponse stopFunction(String vnfUuid) {
-        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfUuid), "", POST);
+        return sendRequest("stop", prepareLifecycleUrl("vnf", "stop", vnfUuid,true), "", POST);
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_IS_UP, eventDescription = "Checking if VNF is up", async = true)
     public EMSOperationResponse getVnfIsUp(GetVnfIsUpCmd cmd) {
-        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", cmd.getVnfId()), "", GET);
+        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", cmd.getVnfId(),true), "", GET);
     }
 
     @ActionEvent(eventType = EventTypes.EVENT_IS_UP, eventDescription = "Checking if VNF is up", async = true)
     private EMSOperationResponse getVnfIsUp(String vnfUuid) {
-        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", vnfUuid), "", GET);
+        return sendRequest("isup", prepareLifecycleUrl("vnf", "isup", vnfUuid, true), "", GET);
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_FUNCTION_STATUS, eventDescription = "Getting network function status", async = true)
     public EMSOperationResponse getFunctionStatus(GetFunctionStatusCmd cmd) {
-        return sendRequest("status", prepareLifecycleUrl("vnf", "status", cmd.getVnfId()), "", GET);
+        return sendRequest("status", prepareLifecycleUrl("vnf", "status", cmd.getVnfId(),true), "", GET);
     }
 
     @Override
@@ -738,9 +738,10 @@ public class VNFManagerImpl implements VNFManager {
      * @param cmdType ems, vnf or sfc.
      * @param cmd     the command to be executed
      * @param vnfUuid the UUID of the VNF that will be managed (if needed)
+     * @param includeVnfId do you want to include the VNF UUID in URL?
      * @return the URL
      */
-    private String prepareLifecycleUrl(String cmdType, String cmd, String vnfUuid) {
+    private String prepareLifecycleUrl(String cmdType, String cmd, String vnfUuid, boolean includeVnfId) {
         // Find VNF
         VnfVO vnfVO = _vnfDao.findByUuid(vnfUuid);
         if (vnfVO == null) {
@@ -752,8 +753,11 @@ public class VNFManagerImpl implements VNFManager {
             throw new CloudRuntimeException("Unable to find EMS with UUID " + vnfVO.getEmsId());
         }
         String apiVersion = "v1.0";
-        return "http://" + emsVO.getIp() + ":" + emsVO.getPort() + "/" + apiVersion + "/" + cmdType + "/" + cmd + "/"
-                + vnfUuid;
+        String url = "http://" + emsVO.getIp() + ":" + emsVO.getPort() + "/" + apiVersion + "/" + cmdType + "/" + cmd;
+        if (includeVnfId) {
+            return url+"/"+vnfUuid;
+        }
+        return url;
     }
 
     private EMSOperationResponse sendRequest(String type, String urlStr, String urlParameters, String httpMethod) {
