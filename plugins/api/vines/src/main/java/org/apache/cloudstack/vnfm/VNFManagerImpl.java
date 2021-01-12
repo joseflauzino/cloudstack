@@ -771,12 +771,14 @@ public class VNFManagerImpl implements VNFManager {
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Accept", "application/json");
-
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
+            
+            if (httpMethod.equals(POST) || httpMethod.equals(PUT)) {
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(urlParameters);
+                wr.flush();
+                wr.close();
+            }
 
             System.out.println("Sending " + httpMethod + " request to URL: " + urlStr);
             int responseCode = con.getResponseCode();
