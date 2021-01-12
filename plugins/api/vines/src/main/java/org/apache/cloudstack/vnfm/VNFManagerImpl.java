@@ -771,7 +771,7 @@ public class VNFManagerImpl implements VNFManager {
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Accept", "application/json");
-            
+
             if (httpMethod.equals(POST) || httpMethod.equals(PUT)) {
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
