@@ -319,7 +319,7 @@ public class VNFManagerImpl implements VNFManager {
         for (int i = 0; i < n; i++) {
             System.out.println("Getting VNF status " + i);
             EMSOperationResponse vnfStatusResponse = getVnfIsUp(vnfVO.getUuid());
-            if (vnfStatusResponse.isSuccess() && vnfStatusResponse.getData().equals("Running")) {
+            if (vnfStatusResponse.isSuccess() && vnfStatusResponse.getMessage().equals("Running")) {
                 break; // stop polling because VNF VM is up
             }
             if (i == n - 1) {
@@ -620,7 +620,7 @@ public class VNFManagerImpl implements VNFManager {
                 if (emsResponse.getStatus().equals("error")) {
                     success = false;
                 }
-                emsOpResponse = new EMSOperationResponse("pushvnfp", success, emsResponse.getData());
+                emsOpResponse = new EMSOperationResponse("pushvnfp", success, emsResponse.getMessage(), emsResponse.getObject());
                 EntityUtils.consume(resEntity);
                 httpResponse.close();
                 httpclient.close();
@@ -807,7 +807,7 @@ public class VNFManagerImpl implements VNFManager {
         if (emsResponse.getStatus().equals("success")) {
             success = true;
         }
-        EMSOperationResponse response = new EMSOperationResponse(type, success, emsResponse.getData());
+        EMSOperationResponse response = new EMSOperationResponse(type, success, emsResponse.getMessage(), emsResponse.getObject());
         return response;
     }
 }
